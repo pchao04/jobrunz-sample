@@ -73,4 +73,34 @@ public class JobrunrService {
 
 
     }
+
+    public void delete(String jobId) {
+        jobScheduler.delete(jobId);
+    }
+
+    public void buildRestJob(String jobId, String jobName,
+                             String cron, String context) {
+        RestJob clazz =  new RestJob();
+        jobScheduler.createRecurrently(
+                RecurringJobBuilder.aRecurringJob()
+                        .withId(jobId)
+                        .withName(jobName)
+                        //.withAmountOfRetries(3)
+                        .withCron(cron)
+                        .withDetails(() -> clazz.execute(context))
+        );
+    }
+
+    public void buildProducerJob(String jobId, String jobName,
+                             String cron, String context) {
+        ProducerJob clazz =  new ProducerJob();
+        jobScheduler.createRecurrently(
+                RecurringJobBuilder.aRecurringJob()
+                        .withId(jobId)
+                        .withName(jobName)
+                        //.withAmountOfRetries(3)
+                        .withCron(cron)
+                        .withDetails(() -> clazz.execute(context))
+        );
+    }
 }

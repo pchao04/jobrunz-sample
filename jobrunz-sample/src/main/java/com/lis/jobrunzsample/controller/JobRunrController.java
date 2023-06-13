@@ -41,35 +41,8 @@ public class JobRunrController {
             @PathVariable("jobId") String jobId,
             @RequestBody String cron) {
 
-        var job = service.getJob(jobId);
-        var execType = job.getExecType();
-
-        if (job.getExecType().equals("rest")) {
-            RestJob clazz =  new RestJob();
-            service.updateCron(jobId,cron);
-            jobScheduler.delete(jobId);
-            jobScheduler.createRecurrently(
-                    RecurringJobBuilder.aRecurringJob()
-                            .withId(jobId)
-                            .withName(job.getName())
-                            //.withAmountOfRetries(3)
-                            .withCron(cron)
-                            .withDetails(() -> clazz.execute(job.getExecContext()))
-            );
-        }
-        else if (execType.equals("event")) {
-            ProducerJob clazz =  new ProducerJob();
-            service.updateCron(jobId,cron);
-            jobScheduler.delete(jobId);
-            jobScheduler.createRecurrently(
-                    RecurringJobBuilder.aRecurringJob()
-                            .withId(jobId)
-                            .withName(job.getName())
-                            //.withAmountOfRetries(3)
-                            .withCron(cron)
-                            .withDetails(() -> clazz.execute(job.getExecContext()))
-            );
-        }
+        
+       service.updateSchedule(jobId, cron);
 
 
         return okResponse("job enqueued successfully");

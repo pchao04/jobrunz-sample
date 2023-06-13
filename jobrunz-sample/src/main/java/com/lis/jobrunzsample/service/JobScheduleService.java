@@ -11,9 +11,10 @@ import java.util.List;
 @Transactional
 public class JobScheduleService {
     private JobScheduleRepostory repo;
-
-    public JobScheduleService(JobScheduleRepostory repo) {
+    private JobrunrService jobRunrService;
+    public JobScheduleService(JobScheduleRepostory repo, JobrunrService jobRunrService) {
         this.repo = repo;
+        this.jobRunrService = jobRunrService;
     }
 
     public List<JobSchedule> findAll() {
@@ -27,5 +28,25 @@ public class JobScheduleService {
 
     public void updateCron (String jobId, String cron) {
         repo.updateCron(jobId,cron);
+    }
+
+    public void updateSchedule(String jobId, String cron) {
+        var job = getJob(jobId);
+        var execType = job.getExecType();
+        if (job.getExecType().equals("rest")) {
+            // update repo
+            updateCron(jobId,cron);
+            jobRunrService.delete(jobId);
+            jobRunrService.buildRestJob(jobId, job.getName(),
+                   cron, job.getExecContext());
+        }
+        else if (execType.equals("event")) {
+            // update repo
+            updateCron(jobId,cron);
+            jobRunrService.delete(jobId);
+            jobRunrService.buildProducerJob(jobId, job.getName(),
+                    cron, job.getExecContext());
+        }
+
     }
 }
