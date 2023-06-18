@@ -36,32 +36,14 @@ public class JobrunrService {
              var jobId = entry.getJobId();
              var jobName = entry.getName();
              var cron = entry.getCron();
-             var desription = entry.getDescription();
              var context = entry.getExecContext();
-              var execType = entry.getExecType();
+            var execType = entry.getExecType();
 
             if (execType.equals("rest")) {
-
-                RestJob clazz =  new RestJob();
-                jobScheduler.createRecurrently(
-                        RecurringJobBuilder.aRecurringJob()
-                                .withId(jobId)
-                                .withName(jobName)
-                                //.withAmountOfRetries(3)
-                                .withCron(cron)
-                                .withDetails(() -> clazz.execute(context))
-                );
+                buildRestJob(jobId, jobName, cron, context);
             }
             else if (execType.equals("event")) {
-                ProducerJob clazz =  new ProducerJob();
-                jobScheduler.createRecurrently(
-                        RecurringJobBuilder.aRecurringJob()
-                                .withId(jobId)
-                                .withName(jobName)
-                                //.withAmountOfRetries(3)
-                                .withCron(cron)
-                                .withDetails(() -> clazz.execute(context))
-                );
+                buildProducerJob(jobId, jobName, cron, context);
             }
             else {
                 throw new IllegalArgumentException("unkown type" + execType);

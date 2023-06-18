@@ -41,7 +41,7 @@ public class JobRunrController {
             @PathVariable("jobId") String jobId,
             @RequestBody String cron) {
 
-        
+
        service.updateSchedule(jobId, cron);
 
 
